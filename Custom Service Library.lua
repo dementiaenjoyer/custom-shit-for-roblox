@@ -43,4 +43,4 @@ do --// Init
     end
 end
 
-return services
+return {services, game}
