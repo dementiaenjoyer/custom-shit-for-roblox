@@ -30,14 +30,6 @@ do --// Components
         )
     end
 
-    function Other.LerpVector3(Vector1, Vector2, Interp)
-        return Vector3.new(
-            Other.Lerp(Vector1.X, Vector2.X, Interp),
-            Other.Lerp(Vector1.Y, Vector2.Y, Interp),
-            Other.Lerp(Vector1.Z, Vector2.Z, Interp)
-        )
-    end
-
 end
 
 function TweenLibrary:Tween(Object, Property, EndValue, Duration)
@@ -53,11 +45,7 @@ function TweenLibrary:Tween(Object, Property, EndValue, Duration)
         elseif Property:find("Transparency") then
             Object[Property] = Other.LerpTransparency(StartValue, EndValue, Progress)
         elseif Property:find("Position") then
-            if typeof(StartValue) == "Vector3" then
-                Object.Position = Other.LerpVector3(StartValue, EndValue, Progress)
-            else
-                Object.Position = Other.LerpVector2(StartValue, EndValue, Progress)
-            end
+            Object.Position = Other.LerpVector2(StartValue, EndValue, Progress)
         end
 
         if Progress < 1 then
