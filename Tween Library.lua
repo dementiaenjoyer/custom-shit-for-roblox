@@ -23,10 +23,10 @@ do --// Components
         return Other.Lerp(Transparency1, Transparency2, Interp)
     end
 
-    function Other.LerpVector2(Vector1, Vector2, Interp)
+    function Other.LerpVector2(Vec1, Vec2, Interp)
         return Vector2.new(
-            Other.Lerp(Vector1.X, Vector2.X, Interp),
-            Other.Lerp(Vector1.Y, Vector2.Y, Interp)
+            Other.Lerp(Vec1.X, Vec2.X, Interp),
+            Other.Lerp(Vec1.Y, Vec2.Y, Interp)
         )
     end
 
