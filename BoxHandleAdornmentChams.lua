@@ -40,6 +40,8 @@ local chams = {}; do
 
 		if (not chams.created[character]) then
 			chams.created[character] = {};
+		else
+			return;
 		end
 
 		for _, bodypart in character.GetChildren(character) do
