@@ -25,7 +25,7 @@ local chams = {}; do
 			local occluded, visible = cham.occluded, cham.visible;
 
 			if (not chams.enabled) or (not body_part or body_part.Parent == nil) or (occluded.Parent == nil) or (visible.Parent == nil) then
-				chams.remove(cham, body_part);
+				chams.remove(cham, body_part, character);
 			end
 
 			occluded.Color3 = chams.occluded_color;
