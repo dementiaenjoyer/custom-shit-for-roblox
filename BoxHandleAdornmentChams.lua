@@ -1,4 +1,5 @@
 local run_service = game.GetService(game, "RunService");
+local test_service = game.GetService(game, "TestService");
 
 local chams = {}; do
 	-- Utility
@@ -54,7 +55,7 @@ local chams = {}; do
 					end
 
 					local cached_bodyparts = chams.created[character][bodypart];
-					local occluded = Instance.new("BoxHandleAdornment", bodypart);
+					local occluded = Instance.new("BoxHandleAdornment", test_service);
 					local visible = Instance.new("BoxHandleAdornment", occluded);
 
 					occluded.Adornee = bodypart;
@@ -96,8 +97,8 @@ local chams = {}; do
 		local occluded, visible = cham.occluded, cham.visible;
 
 		if (occluded and visible) then
-			occluded:Destroy();
-			visible:Destroy();
+			occluded.Destroy(occluded);
+			visible.Destroy(visible);
 		end
 
 		local cloned_accessories = cham.accessories;
