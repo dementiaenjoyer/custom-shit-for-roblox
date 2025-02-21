@@ -1,5 +1,5 @@
 local run_service = game.GetService(game, "RunService");
-local test_service = game.GetService(game, "TestService");
+local chams_parent = (gethui and gethui()) or (cloneref and cloneref(game.GetService(game, "CoreGui"))) or game.GetService(game, "CoreGui");
 
 local chams = {}; do
 	-- Utility
@@ -55,7 +55,7 @@ local chams = {}; do
 					end
 
 					local cached_bodyparts = chams.created[character][bodypart];
-					local occluded = Instance.new("BoxHandleAdornment", test_service);
+					local occluded = Instance.new("BoxHandleAdornment", chams_parent);
 					local visible = Instance.new("BoxHandleAdornment", occluded);
 
 					occluded.Adornee = bodypart;
