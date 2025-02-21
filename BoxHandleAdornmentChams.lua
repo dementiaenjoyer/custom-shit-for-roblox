@@ -156,9 +156,6 @@ local chams = {}; do
 		end
 	end
 
-
-	chams.create(workspace.Phantoms);
-
 	-- Loops
 	do
 		chams.connection = run_service.Heartbeat:Connect(function(dt)
