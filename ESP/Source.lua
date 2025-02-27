@@ -4,6 +4,7 @@
 		- Fixed issues where elements wouldn't get deleted if the esp priority got destroyed
 		- Switched to namecalling instead of indexing, only more optimized in some scenarios
 		- Preset size for root Y to prevent scaling miscalculation
+		- More customization
 ]]
 
 -- Services
@@ -25,10 +26,13 @@ local _esp = {}; do
 		["box"] = {
 			["enabled"] = false, 
 			["rotate_gradient"] = false,
-
 			["rotation_speed"] = 1,
+			
 			["color_1"] = Color3.new(1, 1, 1), 
-			["color_2"] = Color3.new(1, 1, 1)
+			["color_2"] = Color3.new(1, 1, 1),
+			
+			["outline_transparency"] = 0,
+			["transparency"] = 0,
 		},
 
 		["offset"] = Vector3.new(0, 1, 0),
@@ -173,6 +177,8 @@ local _esp = {}; do
 
 						main_outline.Size = UDim2.new(1, 2, 1, 2);
 						main_outline.Position = UDim2.new(0, -1, 0, -1);
+						
+						box.outline_stroke.Transparency = box_settings.outline_transparency;
 
 						local color_gradient = box.color_gradient; do
 							if (box_settings.rotate_gradient) then
