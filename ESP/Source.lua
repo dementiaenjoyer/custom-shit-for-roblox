@@ -3,6 +3,7 @@
 		- Fixed issues regarding custom game support
 		- Fixed issues where elements wouldn't get deleted if the esp priority got destroyed
 		- Switched to namecalling instead of indexing, only more optimized in some scenarios
+		- Preset size for root Y to prevent scaling miscalculation
 ]]
 
 -- Services
@@ -150,7 +151,7 @@ local _esp = {}; do
 			local holder = object_cache.holder;
 			local box = object_cache.box;
 
-			local scale = (root.Size.Y * camera.ViewportSize.Y) / ((2 * distance * math.tan(math.rad(camera.FieldOfView) / 2)) * 1.5); -- this is pasted from somewhere, i can't remember where
+			local scale = (2 * camera.ViewportSize.Y) / ((2 * distance * math.tan(math.rad(camera.FieldOfView) / 2)) * 1.5); -- this is pasted from somewhere, i can't remember where
 
 			local size = _esp.settings.size;
 			local width, height = size.X * scale, size.Y * scale;
