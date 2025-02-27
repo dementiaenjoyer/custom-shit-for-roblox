@@ -31,6 +31,7 @@ local _esp = {}; do
 			["color_1"] = Color3.new(1, 1, 1), 
 			["color_2"] = Color3.new(1, 1, 1),
 			
+			["outline_color"] = Color3.new(1, 1, 1),
 			["outline_transparency"] = 0,
 			["transparency"] = 0,
 		},
@@ -178,7 +179,10 @@ local _esp = {}; do
 						main_outline.Size = UDim2.new(1, 2, 1, 2);
 						main_outline.Position = UDim2.new(0, -1, 0, -1);
 						
-						box.outline_stroke.Transparency = box_settings.outline_transparency;
+						local outline_stroke = box.outline_stroke; do
+							outline_stroke.Color = box_settings.outline_color;
+							outline_stroke.Transparency = box_settings.outline_transparency;
+						end
 
 						local color_gradient = box.color_gradient; do
 							if (box_settings.rotate_gradient) then
