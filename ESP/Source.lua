@@ -175,7 +175,7 @@ local _esp = {}; do
 						main_outline.Position = UDim2.new(0, -1, 0, -1);
 
 						local color_gradient = box.color_gradient; do
-							if (box_settings.rotation_speed) then
+							if (box_settings.rotate_gradient) then
 								color_gradient.Rotation += box_settings.rotation_speed;
 							end
 
