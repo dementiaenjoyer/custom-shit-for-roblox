@@ -27,10 +27,10 @@ local _esp = {}; do
 			["enabled"] = false, 
 			["rotate_gradient"] = false,
 			["rotation_speed"] = 1,
-			
+
 			["color_1"] = Color3.new(1, 1, 1), 
 			["color_2"] = Color3.new(1, 1, 1),
-			
+
 			["outline_color"] = Color3.new(1, 1, 1),
 			["outline_transparency"] = 0,
 			["transparency"] = 0,
@@ -178,7 +178,7 @@ local _esp = {}; do
 
 						main_outline.Size = UDim2.new(1, 2, 1, 2);
 						main_outline.Position = UDim2.new(0, -1, 0, -1);
-						
+
 						local outline_stroke = box.outline_stroke; do
 							outline_stroke.Color = box_settings.outline_color;
 							outline_stroke.Transparency = box_settings.outline_transparency;
@@ -202,10 +202,10 @@ local _esp = {}; do
 
 	-- Connections
 	do
-		local heartbeat = nil;
+		_esp.heartbeat = nil;
 
 		function _esp.load()
-			heartbeat = run_service.Heartbeat:Connect(function(dt)
+			_esp.heartbeat = run_service.Heartbeat:Connect(function(dt)
 				local roots = _esp.funcs.get_roots();
 
 				for player, root in roots do
@@ -219,8 +219,8 @@ local _esp = {}; do
 		end
 
 		function _esp.unload()
-			if (heartbeat) then
-				heartbeat:Disconnect();
+			if (_esp.heartbeat) then
+				_esp.heartbeat:Disconnect();
 			end
 		end
 	end
