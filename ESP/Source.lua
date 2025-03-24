@@ -1,15 +1,16 @@
 --[[
 	CHANGELOGS:
-		- Fixed issues regarding custom game support
-		- Fixed issues where elements wouldn't get deleted if the esp priority got destroyed
-		- Switched to namecalling instead of indexing, only more optimized in some scenarios
-		- Preset size for root Y to prevent scaling miscalculation
-		- More customization
+		- Added tracers
 ]]
 
 -- Services
 local players = game:GetService("Players");
 local run_service = game:GetService("RunService");
+local user_input_service = game:GetService("UserInputService");
+local gui_service = (run_service:IsStudio() and game:GetService("GuiService")) or (cloneref and cloneref(game:GetService("GuiService")));
+
+-- Modules
+local math_module = loadstring(game:HttpGet("https://raw.githubusercontent.com/dementiaenjoyer/roblox-math/refs/heads/main/module.lua"))();
 
 -- Variables
 local camera = workspace.CurrentCamera
@@ -31,12 +32,23 @@ local _esp = {}; do
 			["color_1"] = Color3.new(1, 1, 1), 
 			["color_2"] = Color3.new(1, 1, 1),
 
-			["outline_color"] = Color3.new(1, 1, 1),
+			["outline_color"] = Color3.new(0, 0, 0),
 			["outline_transparency"] = 0,
 			["transparency"] = 0,
 		},
+		
+		["tracers"] = {
+			["enabled"] = false,
+			
+			["color_1"] = Color3.new(1, 1, 1), 
+			["color_2"] = Color3.new(1, 1, 1),
+			
+			["outline_color"] = Color3.new(0, 0, 0),
+			["outline_transparency"] = 1,
+			["transparency"] = 0,
+		},
 
-		["offset"] = Vector3.new(0, 1, 0),
+		["offset"] = Vector3.new(0, 0.3, 0),
 		["size"] = Vector2.new(3, 4),
 	};
 
@@ -90,6 +102,7 @@ local _esp = {}; do
 					box.Size = UDim2.new(1, 0, 1, 0);
 					box.BorderColor3 = Color3.fromRGB(0, 0, 0);
 					box.BackgroundTransparency = 1;
+					box.ZIndex = 2;
 				end
 
 				local outline = Instance.new("Frame", box); do
@@ -99,6 +112,7 @@ local _esp = {}; do
 					outline.BorderColor3 = Color3.fromRGB(0, 0, 0);
 					outline.BackgroundTransparency = 1;
 					outline.Position = UDim2.new(0, -1, 0, -1);
+					outline.ZIndex = 3;
 				end
 
 				local inline_stroke = Instance.new("UIStroke", outline); do
@@ -112,6 +126,27 @@ local _esp = {}; do
 				end
 
 				new_cache.box = {box = box, outline = outline, outline_stroke = outline_stroke, inline_stroke = inline_stroke, color_gradient = Instance.new("UIGradient", inline_stroke)};
+			end
+			
+			-- Tracers
+			do
+				local tracer_line = Instance.new("Frame", main_holder); do
+					tracer_line.BorderSizePixel = 0;
+					tracer_line.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+					tracer_line.Size = UDim2.new(1, 0, 1, 0);
+					tracer_line.BorderColor3 = Color3.fromRGB(0, 0, 0);
+					tracer_line.AnchorPoint = Vector2.new(0.5, 0.5);
+					tracer_line.ZIndex = 1;
+				end
+				
+				local color_gradient = Instance.new("UIGradient", tracer_line);
+				
+				local outline_stroke = Instance.new("UIStroke", tracer_line); do
+					outline_stroke.Thickness = 1;
+					outline_stroke.LineJoinMode = Enum.LineJoinMode.Miter;
+				end
+				
+				new_cache.tracer = {tracer_line = tracer_line, outline_stroke = outline_stroke, color_gradient = color_gradient};
 			end
 
 			cache[player] = new_cache;
@@ -146,8 +181,12 @@ local _esp = {}; do
 				return _esp.remove(player);
 			end
 
-			local world_to_screen, on_screen = camera:WorldToScreenPoint(root.Position - _esp.settings.offset);
-			local distance = world_to_screen.Z;
+			local position = root.Position - _esp.settings.offset;
+			
+			local world_to_screen_point, on_screen = camera:WorldToScreenPoint(position);
+			local world_to_viewport_point, on_screen = camera:WorldToViewportPoint(position);
+			
+			local distance = world_to_screen_point.Z;
 
 			if (not on_screen) then
 				return _esp.remove(player);
@@ -155,17 +194,18 @@ local _esp = {}; do
 
 			local holder = object_cache.holder;
 			local box = object_cache.box;
+			local tracer = object_cache.tracer;
 
 			local scale = (2 * camera.ViewportSize.Y) / ((2 * distance * math.tan(math.rad(camera.FieldOfView) / 2)) * 1.5); -- this is pasted from somewhere, i can't remember where
 
 			local size = _esp.settings.size;
 			local width, height = size.X * scale, size.Y * scale;
+			
+			local main_box = box.box;
+			local main_outline = box.outline;
 
 			-- Box
 			do
-				local main_box = box.box;
-				local main_outline = box.outline;
-
 				local box_settings = _esp.settings.box; do
 					local enabled = box_settings.enabled;
 
@@ -174,7 +214,7 @@ local _esp = {}; do
 
 					if (enabled) then
 						main_box.Size = UDim2.new(0, width, 0, height);
-						main_box.Position = UDim2.new(0, world_to_screen.X - (width / 2), 0, world_to_screen.Y - (height / 2));
+						main_box.Position = UDim2.new(0, world_to_screen_point.X - (width / 2), 0, world_to_screen_point.Y - (height / 2));
 
 						main_outline.Size = UDim2.new(1, 2, 1, 2);
 						main_outline.Position = UDim2.new(0, -1, 0, -1);
@@ -192,6 +232,37 @@ local _esp = {}; do
 							color_gradient.Color = ColorSequence.new({
 								ColorSequenceKeypoint.new(0, box_settings.color_1),
 								ColorSequenceKeypoint.new(1, box_settings.color_2),
+							});
+						end
+					end
+				end
+			end
+			
+			-- Tracer
+			do
+				local tracer_settings = _esp.settings.tracers; do
+					local enabled = tracer_settings.enabled;
+					local tracer_line = tracer.tracer_line;
+					
+					tracer_line.Visible = enabled;
+					
+					if (enabled) then
+						local position, rotation, size = math_module.line_rotation(user_input_service:GetMouseLocation(), Vector2.new(world_to_viewport_point.X, world_to_viewport_point.Y + (main_box.Size.Y.Offset / 2)), 1, gui_service)
+
+						tracer_line.Position = position;
+						tracer_line.Size = size;
+						tracer_line.Rotation = rotation;
+						tracer_line.BackgroundTransparency = tracer.transparency;
+						
+						local outline_stroke = tracer.outline_stroke; do
+							outline_stroke.Color = tracer_settings.outline_color;
+							outline_stroke.Transparency = tracer_settings.outline_transparency;
+						end
+						
+						local color_gradient = tracer.color_gradient; do
+							color_gradient.Color = ColorSequence.new({
+								ColorSequenceKeypoint.new(0, tracer_settings.color_1),
+								ColorSequenceKeypoint.new(1, tracer_settings.color_2),
 							});
 						end
 					end
@@ -226,4 +297,4 @@ local _esp = {}; do
 	end
 end
 
-return _esp;
+return _esp; 
