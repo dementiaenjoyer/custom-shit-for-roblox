@@ -102,7 +102,6 @@ local _esp = {}; do
 					box.Size = UDim2.new(1, 0, 1, 0);
 					box.BorderColor3 = Color3.fromRGB(0, 0, 0);
 					box.BackgroundTransparency = 1;
-					box.ZIndex = 2;
 				end
 
 				local outline = Instance.new("Frame", box); do
@@ -112,7 +111,6 @@ local _esp = {}; do
 					outline.BorderColor3 = Color3.fromRGB(0, 0, 0);
 					outline.BackgroundTransparency = 1;
 					outline.Position = UDim2.new(0, -1, 0, -1);
-					outline.ZIndex = 3;
 				end
 
 				local inline_stroke = Instance.new("UIStroke", outline); do
@@ -136,7 +134,6 @@ local _esp = {}; do
 					tracer_line.Size = UDim2.new(1, 0, 1, 0);
 					tracer_line.BorderColor3 = Color3.fromRGB(0, 0, 0);
 					tracer_line.AnchorPoint = Vector2.new(0.5, 0.5);
-					tracer_line.ZIndex = 1;
 				end
 				
 				local color_gradient = Instance.new("UIGradient", tracer_line);
@@ -210,12 +207,11 @@ local _esp = {}; do
 					local enabled = box_settings.enabled;
 
 					main_box.Visible = enabled;
+					main_box.Size = UDim2.new(0, width, 0, height);
 					main_outline.Visible = enabled;
 
 					if (enabled) then
-						main_box.Size = UDim2.new(0, width, 0, height);
 						main_box.Position = UDim2.new(0, world_to_screen_point.X - (width / 2), 0, world_to_screen_point.Y - (height / 2));
-
 						main_outline.Size = UDim2.new(1, 2, 1, 2);
 						main_outline.Position = UDim2.new(0, -1, 0, -1);
 
@@ -243,7 +239,6 @@ local _esp = {}; do
 				local tracer_settings = _esp.settings.tracers; do
 					local enabled = tracer_settings.enabled;
 					local tracer_line = tracer.tracer_line;
-					
 					tracer_line.Visible = enabled;
 					
 					if (enabled) then
